@@ -1,0 +1,162 @@
+#!/usr/bin/env bash
+
+set -e
+
+source /opt/ros/$(dir /opt/ros)/setup.bash
+
+ROSDISTRO="$(rosversion -d)"
+BASE=$chassis
+LIDAR_MODEL=$lidar
+ARCH="$(uname -m)"
+echo $ARCH
+echo "
+________ ______ ______ _______ ________
+___    |_/_  _/__  __ )__  __ \___  __/
+__  /| |__  / __  __  |_  / / /__  /   
+_  __| |_/ / __  /_/ / / /_/ / _  /    
+/_/  | |___/__/_____/  \____/  /_/     
+                    
+     http://www.xmhuaway.com  
+
+You are now going to install aibot environment, Please following
+the installtion.
+"
+
+read -p "Please select your chassis model: 
+1. a1.
+2. s1.
+3. mini.
+4. myagv.
+Please select: " chassis
+
+if [ "$chassis" == "1" ]
+    then
+	    BASE="a1"
+elif [ "$chassis" == "2" ]
+    then
+	    BASE="s1"
+elif [ "$chassis" == "3" ]
+    then
+        BASE="mini"
+elif [ "$chassis" == "4" ]
+    then
+        BASE="myagv"
+else
+    echo "Invalid number: $chassis. Exiting now!"
+    exit 1
+fi
+
+echo "BASE = $BASE";
+
+read -p "Please select your lidar model: 
+1. rplidar.
+2. ydlidar.
+3. hokuyo.
+Please select: " lidar
+
+if [ "$lidar" == "1" ]
+    then
+	    LIDAR_MODEL="rplidar"
+elif [ "$lidar" == "2" ]
+    then
+	    LIDAR_MODEL="ydlidar"
+elif [ "$lidar" == "3" ]
+    then
+        LIDAR_MODEL="hokuyo"
+else
+    echo "Invalid number: $lidar. Exiting now!"
+    exit 1
+fi
+
+echo "LIDAR_MODEL = $LIDAR_MODEL";
+
+echo -n "You are installing ROS-$ROSDISTRO AIBot for $BASE base with a lidar $LIDAR_MODEL ! Enter [y] to continue. " 
+read reply
+if [[ "$reply" != "y" && "$reply" != "Y" ]]
+    then
+        echo "Wrong input. Exiting now"
+        exit 1
+fi
+
+echo
+echo "INSTALLING NOW...."
+echo
+
+sudo apt-get update
+sudo apt-get install -y \
+avahi-daemon \
+openssh-server \
+python-setuptools \
+python-dev \
+build-essential 
+
+
+source /opt/ros/$ROSDISTRO/setup.bash
+
+cd $HOME/Documents
+mkdir -p aibot_ws/src
+cd $HOME/Documents/aibot_ws/src
+mkdir aibot
+mkdir thirdParty
+
+sudo apt-get install -y \
+ros-$ROSDISTRO-roslint \
+ros-$ROSDISTRO-rosserial \
+ros-$ROSDISTRO-rosserial-arduino \
+ros-$ROSDISTRO-imu-filter-madgwick \
+ros-$ROSDISTRO-gmapping \
+ros-$ROSDISTRO-map-server \
+ros-$ROSDISTRO-navigation \
+ros-$ROSDISTRO-robot-localization \
+ros-$ROSDISTRO-tf2 \
+ros-$ROSDISTRO-tf2-ros \
+ros-$ROSDISTRO-teb-local-planner \
+ros-$ROSDISTRO-realsense2-camera \
+ros-$ROSDISTRO-moveit \
+ros-$ROSDISTRO-depthimage-to-laserscan
+
+cd $HOME/Documents/aibot_ws/src/aibot
+git clone git://github.com/xmhuaway/aibot_description.git
+git clone git://github.com/xmhuaway/aibot_hw.git
+git clone git://github.com/xmhuaway/aibot_moveit.git
+git clone git://github.com/xmhuaway/aibot_msgs.git
+git clone git://github.com/xmhuaway/navigation_demo.git
+
+cd $HOME/Documents/aibot_ws/src/thirdParty
+git clone git://github.com/naoki-mizuno/ds4_driver.git
+git clone git://github.com/elephantrobotics/mycobot_ros.git
+git clone git://github.com/linorobot/imu_calib.git
+
+if [[ "$LIDAR_MODEL" == "hokuyo" ]]
+    then
+        sudo apt-get install -y ros-$ROSDISTRO-urg-node
+        hokuyoip=
+        echo ""
+        echo -n "Input your hokuyo IP. Press Enter to skip (Serial Based LIDAR): "
+        read hokuyoip
+        echo "export LIDARIP=$hokuyoip" >> $HOME/.bashrc
+
+elif [[ "$LIDAR_MODEL" == "rplidar" ]]
+    then
+        sudo apt-get install -y ros-$ROSDISTRO-rplidar-ros
+
+elif [[ "$LIDAR_MODEL" == "ydlidar" ]]
+    then
+        git clone https://github.com/EAIBOT/ydlidar.git
+fi
+
+
+echo "source $HOME/Documents/aibot_ws/devel/setup.bash" >> $HOME/.bashrc
+echo "export AIBOT_LIDAR=$LIDAR_MODEL" >> $HOME/.bashrc
+echo "export AIBOT_BASE=$BASE" >> $HOME/.bashrc
+source $HOME/.bashrc
+
+cd $HOME/Documents/aibot_ws
+catkin_make --pkg aibot_msgs
+catkin_make
+source devel/setup.bash
+source ~/.bashrc
+
+echo
+echo "INSTALLATION DONE!"
+echo
