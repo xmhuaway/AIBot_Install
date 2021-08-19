@@ -116,16 +116,16 @@ ros-$ROSDISTRO-moveit \
 ros-$ROSDISTRO-depthimage-to-laserscan
 
 cd $HOME/Documents/aibot_ws/src/aibot
-git clone git://github.com/xmhuaway/aibot_description.git
-git clone git://github.com/xmhuaway/aibot_hw.git
-git clone git://github.com/xmhuaway/aibot_moveit.git
-git clone git://github.com/xmhuaway/aibot_msgs.git
-git clone git://github.com/xmhuaway/navigation_demo.git
+git clone https://github.com/xmhuaway/aibot_description
+git clone https://github.com/xmhuaway/aibot_hw
+git clone https://github.com/xmhuaway/aibot_moveit
+git clone https://github.com/xmhuaway/aibot_msgs
+git clone https://github.com/xmhuaway/navigation_demo
 
 cd $HOME/Documents/aibot_ws/src/thirdParty
-git clone git://github.com/naoki-mizuno/ds4_driver.git
-git clone git://github.com/elephantrobotics/mycobot_ros.git
-git clone git://github.com/linorobot/imu_calib.git
+git clone https://github.com/naoki-mizuno/ds4_driver
+git clone https://github.com/elephantrobotics/mycobot_ros
+git clone https://github.com/linorobot/imu_calib
 
 if [[ "$LIDAR_MODEL" == "hokuyo" ]]
     then
