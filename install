@@ -96,8 +96,8 @@ source /opt/ros/$ROSDISTRO/setup.bash
 cd $HOME/Documents
 mkdir -p aibot_ws/src
 cd $HOME/Documents/aibot_ws/src
-mkdir aibot
-mkdir thirdParty
+mkdir -p aibot
+mkdir -p thirdParty
 
 sudo apt-get install -y \
 ros-$ROSDISTRO-roslint \
@@ -116,16 +116,81 @@ ros-$ROSDISTRO-moveit \
 ros-$ROSDISTRO-depthimage-to-laserscan
 
 cd $HOME/Documents/aibot_ws/src/aibot
-git clone https://github.com/xmhuaway/aibot_description
-git clone https://github.com/xmhuaway/aibot_hw
-git clone https://github.com/xmhuaway/aibot_moveit
-git clone https://github.com/xmhuaway/aibot_msgs
-git clone https://github.com/xmhuaway/navigation_demo
+
+if [ ! -d aibot_description ]  
+    then
+        git clone https://github.com/xmhuaway/aibot_description
+else
+    cd aibot_description
+    git pull
+    cd ..
+fi
+
+if [ ! -d aibot_hw ]
+    then
+        git clone https://github.com/xmhuaway/aibot_hw
+else
+    cd aibot_hw
+    git pull
+    cd ..
+fi
+
+if [ ! -d aibot_moveit ]
+    then
+        git clone https://github.com/xmhuaway/aibot_moveit
+else
+    cd aibot_moveit
+    git pull
+    cd ..
+fi
+
+if [ ! -d aibot_msgs ]
+    then
+        git clone https://github.com/xmhuaway/aibot_msgs
+else
+    cd aibot_msgs
+    git pull
+    cd ..
+fi
+
+if [ ! -d navigation_demo ]
+    then
+        git clone https://github.com/xmhuaway/navigation_demo
+else
+    cd navigation_demo
+    git pull
+    cd ..
+fi
 
 cd $HOME/Documents/aibot_ws/src/thirdParty
-git clone https://github.com/naoki-mizuno/ds4_driver
-git clone https://github.com/elephantrobotics/mycobot_ros
-git clone https://github.com/linorobot/imu_calib
+
+if [ ! -d ds4_driver ]
+    then
+        git clone https://github.com/naoki-mizuno/ds4_driver
+else
+    cd ds4_driver
+    git pull
+    cd ..
+fi
+
+if [ ! -d mycobot_ros ]
+    then
+        git clone https://github.com/elephantrobotics/mycobot_ros
+else
+    cd mycobot_ros
+    git pull
+    cd ..
+fi
+
+if [ ! -d imu_calib ]
+    then
+        git clone https://github.com/linorobot/imu_calib
+else
+    cd imu_calib
+    git pull
+    cd ..
+fi
+
 
 if [[ "$LIDAR_MODEL" == "hokuyo" ]]
     then
@@ -142,7 +207,14 @@ elif [[ "$LIDAR_MODEL" == "rplidar" ]]
 
 elif [[ "$LIDAR_MODEL" == "ydlidar" ]]
     then
-        git clone https://github.com/EAIBOT/ydlidar.git
+	if [ ! -d ydlidar ]
+            then
+                git clone https://github.com/EAIBOT/ydlidar.git
+        else
+            cd ydlidar.git
+            git pull
+            cd ..
+        fi
 fi
 
 
