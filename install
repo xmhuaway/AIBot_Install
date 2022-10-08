@@ -166,7 +166,7 @@ fi
 
 if [ ! -d imu_calib ]
     then
-        git clone https://github.com/linorobot/imu_calib
+        git clone https://github.com/xmhuaway/imu_calib
 else
     cd imu_calib
     git pull
