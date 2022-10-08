@@ -135,15 +135,6 @@ else
     cd ..
 fi
 
-if [ ! -d aibot_moveit ]
-    then
-        git clone https://github.com/xmhuaway/aibot_moveit
-else
-    cd aibot_moveit
-    git pull
-    cd ..
-fi
-
 if [ ! -d aibot_msgs ]
     then
         git clone https://github.com/xmhuaway/aibot_msgs
@@ -163,15 +154,6 @@ else
 fi
 
 cd $HOME/Documents/aibot_ws/src/thirdParty
-
-if [ ! -d ds4_driver ]
-    then
-        git clone https://github.com/naoki-mizuno/ds4_driver
-else
-    cd ds4_driver
-    git pull
-    cd ..
-fi
 
 if [ ! -d mycobot_ros ]
     then
@@ -224,6 +206,7 @@ echo "export AIBOT_BASE=$BASE" >> $HOME/.bashrc
 source $HOME/.bashrc
 
 cd $HOME/Documents/aibot_ws
+rosdep install --from-path src --ignore-src -r -y
 catkin_make --pkg aibot_msgs
 catkin_make
 source devel/setup.bash
